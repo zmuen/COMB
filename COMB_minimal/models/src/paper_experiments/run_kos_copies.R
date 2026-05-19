@@ -3,13 +3,14 @@ library(jagsUI)
 library(lubridate)
 library(tidyverse)
 library(chron)
+library(rlist)
 
 source(here("comb_functions.R"))
-source(here("COMB_minimal/models/src/model_read_lib_agg.R"))
+source(here("COMB_minimal/models/src/paper_experiments/model_read_lib_agg.R"))
 
 # MCMC settings
 na <- 100
-ni <- 8000
+ni <- 10000
 nt <- 1
 nb <- 1000
 nc <- 6
@@ -103,6 +104,27 @@ get_naive_occ_by_site_df <- function(jagsdata) {
                      by = "Point") %>%
     dplyr::arrange(as.numeric(Point)) %>%
     tibble::column_to_rownames(var = "Point")
+}
+
+modDir = "COMB_minimal/models/src/paper_experiments/jags_files/no_covars/"
+if (!dir.exists(modDir)) {
+  dir.create(modDir, recursive = TRUE) 
+} else {
+  print("Directory already exists.")
+}
+
+saveDirJags = "COMB_minimal/models/src/paper_experiments/jagsResults/jagsResults_no_covars/"
+if (!dir.exists(saveDirJags)) {
+  dir.create(saveDirJags, recursive = TRUE) 
+} else {
+  print("Directory already exists.")
+}
+
+saveDirOcc = "COMB_minimal/models/src/paper_experiments/occResults/no_covars/"
+if (!dir.exists(saveDirOcc)) {
+  dir.create(saveDirOcc, recursive = TRUE) 
+} else {
+  print("Directory already exists.")
 }
 
 
@@ -275,9 +297,9 @@ run_ko <- function(th, sp, year, begin_hour, end_hour, daysLimit,
 set.seed(123)
 test_results_BBWO <- run_ko(th = 0, sp = "BBWO", year=2021, begin_hour=4, end_hour=10, daysLimit=5, 
                             samplesperdayLimit=12,
-                            modDir = "COMB_minimal/models/src/paper_experiments/jags_files/no_covars/",
-                            saveDirJags = "COMB_minimal/models/src/paper_experiments/jagsResults/jagsResults_no_covars/",
-                            saveDirOcc = "COMB_minimal/models/src/paper_experiments/occResults/no_covars/",
+                            modDir = "COMB_minimal/models/src/paper_experiments/jags_files/no_covars",
+                            saveDirJags = "COMB_minimal/models/src/paper_experiments/jagsResults/jagsResults_no_covars",
+                            saveDirOcc = "COMB_minimal/models/src/paper_experiments/occResults/no_covars",
                             include_occ_covar = FALSE,
                             include_time_det_covars = FALSE,
                             site_covars_df = site_covars,
@@ -311,7 +333,8 @@ monitored_HAS <- c(
 
 begin_hour = 4
 end_hour = 10
-speciesCode <- sort(c("AMRO", "BBWO", "CONI"))
+speciesCode <- sort(c("BBWO", "AMRO", "CONI","DUFL", "HETH", "WEWP", "HEWA", "MOUQ", "OSFL", "RBSA", "SOGR", "RBNU", "WETA", "LAZB", "BTYW"))
+
 year <- 2021
 threshold <- c(-2,-1,0,1,2)
 aruVisitLimit <- 60 
